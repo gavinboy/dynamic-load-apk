@@ -71,13 +71,14 @@ public class DLProxyImpl {
     }
 
     private void handleActivityInfo() {
-        Log.d(TAG, "handleActivityInfo, theme=" + mActivityInfo.theme);
-        if (mActivityInfo.theme > 0) {
-            mActivity.setTheme(mActivityInfo.theme);
+        Log.d(TAG, "handleActivityInfo, theme=" + mActivityInfo.getThemeResource());
+        if (mActivityInfo.getThemeResource() > 0) {
+            mActivity.setTheme(mActivityInfo.getThemeResource());
         }
         Theme superTheme = mActivity.getTheme();
         mTheme = mResources.newTheme();
-        mTheme.setTo(superTheme);
+        //mTheme.setTo(superTheme);
+        mTheme.applyStyle(mActivityInfo.getThemeResource(), true);
 
         // TODO: handle mActivityInfo.launchMode here in the future.
     }

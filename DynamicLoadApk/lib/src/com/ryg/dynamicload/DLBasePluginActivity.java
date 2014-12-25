@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.content.res.Resources.Theme;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -61,6 +62,7 @@ public class DLBasePluginActivity extends Activity implements DLPlugin {
     protected Activity that;
     protected DLPluginManager mPluginManager;
     protected DLPluginPackage mPluginPackage;
+    private  Theme mTheme;
 
     protected int mFrom = DLConstants.FROM_INTERNAL;
 
@@ -377,6 +379,37 @@ public class DLBasePluginActivity extends Activity implements DLPlugin {
             }
         }
         return mPluginManager.startPluginActivityForResult(that, dlIntent, requestCode);
+    }
+    
+    @Override
+    public Theme getTheme() {
+      if(mFrom==DLConstants.FROM_EXTERNAL)
+      {
+        if(mTheme==null)
+        {
+          mTheme=mPluginPackage.resources.newTheme();
+          Log.d(TAG, "DLBasePlugin-->theme-->"+mPluginPackage.getThemeByActivityName(getClass().getName()));
+          mTheme.applyStyle(mPluginPackage.getThemeByActivityName(getClass().getName()), true);
+          
+        }
+        return mTheme;
+      }else
+      {
+        return super.getTheme();
+      }
+      
+    }
+    
+    @Override
+    public void setTheme(int resid) {
+      if(mFrom==DLConstants.FROM_EXTERNAL)
+      {
+        getTheme().applyStyle(resid, true);
+      }else
+      {
+        super.setTheme(resid);
+      }
+      
     }
 
 }

@@ -17,9 +17,13 @@
  */
 package com.ryg.dynamicload.internal;
 
+import java.util.HashMap;
+
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.res.AssetManager;
 import android.content.res.Resources;
+import android.content.res.Resources.Theme;
 import dalvik.system.DexClassLoader;
 
 /**
@@ -37,6 +41,7 @@ public class DLPluginPackage {
     public AssetManager assetManager;
     public Resources resources;
     public PackageInfo packageInfo;
+    private HashMap<String, ActivityInfo> mAcitivtyMap = new HashMap<String, ActivityInfo>();
 
     public DLPluginPackage(String packageName, String path, DexClassLoader loader, AssetManager assetManager,
             Resources resources, PackageInfo packageInfo) {
@@ -46,6 +51,15 @@ public class DLPluginPackage {
         this.assetManager = assetManager;
         this.resources = resources;
         this.packageInfo = packageInfo;
+        
+        //解析出packageInfo中所有的Activity信息
+        if(packageInfo.activities!=null && packageInfo.activities.length>0)
+        {
+          for(ActivityInfo info:packageInfo.activities)
+          {
+            mAcitivtyMap.put(info.name, info);
+          }
+        }
     }
 
     public String getDefaultActivity() {
@@ -53,5 +67,21 @@ public class DLPluginPackage {
             mDefaultActivity = packageInfo.activities[0].name;
         }
         return mDefaultActivity;
+    }
+    
+    
+    public ActivityInfo getActivityInfoByName(String mActivityName)
+    {
+      ActivityInfo info=mAcitivtyMap.get(mActivityName);
+      return info;
+    }
+    
+    public int getThemeByActivityName(String mActivityName)
+    {
+      ActivityInfo info=getActivityInfoByName(mActivityName);
+      if(info==null || info.getThemeResource()==0)
+        return android.R.style.Theme;
+      else
+        return info.getThemeResource();
     }
 }

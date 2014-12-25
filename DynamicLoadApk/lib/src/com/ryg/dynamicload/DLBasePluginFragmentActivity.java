@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.content.res.Resources.Theme;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -60,6 +61,7 @@ public class DLBasePluginFragmentActivity extends FragmentActivity implements DL
     protected int mFrom = DLConstants.FROM_INTERNAL;
     protected DLPluginManager mPluginManager;
     protected DLPluginPackage mPluginPackage;
+    private  Theme mTheme;
 
     @Override
     public void attach(Activity proxyActivity, DLPluginPackage pluginPackage) {
@@ -395,6 +397,37 @@ public class DLBasePluginFragmentActivity extends FragmentActivity implements DL
             return super.getSupportLoaderManager();
         }
         return mProxyActivity.getSupportLoaderManager();
+    }
+    
+    @Override
+    public Theme getTheme() {
+      if(mFrom==DLConstants.FROM_EXTERNAL)
+      {
+        if(mTheme==null)
+        {
+          mTheme=mPluginPackage.resources.newTheme();
+          Log.d(TAG, "DLBasePlugin-->theme-->"+mPluginPackage.getThemeByActivityName(getClass().getName()));
+          mTheme.applyStyle(mPluginPackage.getThemeByActivityName(getClass().getName()), true);
+          
+        }
+        return mTheme;
+      }else
+      {
+        return super.getTheme();
+      }
+      
+    }
+    
+    @Override
+    public void setTheme(int resid) {
+      if(mFrom==DLConstants.FROM_EXTERNAL)
+      {
+        getTheme().applyStyle(resid, true);
+      }else
+      {
+        super.setTheme(resid);
+      }
+      
     }
 
 }

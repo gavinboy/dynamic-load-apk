@@ -22,7 +22,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.zip.ZipEntry;
@@ -79,7 +78,7 @@ public class DLPluginManager {
 
     private int mFrom = DLConstants.FROM_INTERNAL;
     
-    private String soLibDir=null;
+    private String mLibDir=null;
 
     private DLPluginManager(Context context) {
         mContext = context.getApplicationContext();
@@ -99,12 +98,11 @@ public class DLPluginManager {
     /**
      * Load a apk. Before start a plugin Activity, we should do this first.<br/>
      * NOTE : will only be called by host apk.
-     * if your plugin has so lib,you should use {@link DLPluginManager#loadApk(String, boolean)}
      * @param dexPath
      */
     public DLPluginPackage loadApk(String dexPath) {
         // when loadApk is called by host apk, we assume that plugin is invoked by host.
-       return loadApk(dexPath,false);
+        return loadApk(dexPath,false);
     }
     
     /**
@@ -136,7 +134,7 @@ public class DLPluginManager {
       
       if(hassolib)
       {
-        soLibDir=mContext.getDir("pluginlib",Context.MODE_PRIVATE).toString();
+        mLibDir=mContext.getDir("pluginlib",Context.MODE_PRIVATE).toString();
         new Thread()
         {
           public void run() {
@@ -146,6 +144,7 @@ public class DLPluginManager {
       }
       return pluginPackage;
     }
+    
     
     /**
      * copy so lib to  specify  directory(/data/data/host_pack_name/pluginlib)
@@ -186,7 +185,7 @@ public class DLPluginManager {
             }
             String libName=ze.getName().substring(ze.getName().lastIndexOf("/")+1);
             ins = zip.getInputStream(ze);
-            fos = new FileOutputStream(new File(soLibDir, libName));
+            fos = new FileOutputStream(new File(mLibDir, libName));
             
             byte[] buf = new byte[2048];
             int len = -1;
@@ -204,20 +203,17 @@ public class DLPluginManager {
       } catch (IOException e) {
         e.printStackTrace();
       }
-      
-      
     }
 
     private DexClassLoader createDexClassLoader(String dexPath) {
         File dexOutputDir = mContext.getDir("dex", Context.MODE_PRIVATE);
         final String dexOutputPath = dexOutputDir.getAbsolutePath();
         //设置ClassLoader的本地so路径
-        if(soLibDir==null)
+        if(mLibDir==null)
         {
-          soLibDir=mContext.getDir("pluginlib", Context.MODE_PRIVATE).toString();
+          mLibDir=mContext.getDir("pluginlib", Context.MODE_PRIVATE).toString();
         }
-       
-        DexClassLoader loader = new DexClassLoader(dexPath, dexOutputPath, mFrom==DLConstants.FROM_EXTERNAL ? soLibDir : null, mContext.getClassLoader());
+        DexClassLoader loader = new DexClassLoader(dexPath, dexOutputPath, mFrom==DLConstants.FROM_EXTERNAL ? mLibDir : null, mContext.getClassLoader());
         return loader;
     }
 
@@ -284,8 +280,7 @@ public class DLPluginManager {
         }
         Class<?> clazz = null;
         try {
-            //clazz = classLoader.loadClass(className);
-            clazz=Class.forName(className, true, classLoader);
+          clazz=Class.forName(className, true, classLoader);
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
             return START_RESULT_NO_CLASS;

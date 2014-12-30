@@ -19,6 +19,7 @@ package com.ryg.dynamicload;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Resources.Theme;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -49,4 +50,6 @@ public interface DLPlugin {
     public void onBackPressed();
     public boolean onCreateOptionsMenu(Menu menu);
     public boolean onOptionsItemSelected(MenuItem item);
+    public Theme getTheme();
+    public void setTheme(int resid);
 }

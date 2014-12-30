@@ -140,30 +140,31 @@ public class DLUtils {
         //TODO: handle other activity types, ActionbarActivity,eg.
         return activityType;
     }
-  /**
-   * 获取CPU名称，根据名称，解析相应平台下的so库
-   * @return
-   *      ARM、ARMV7、X86、MIPS
-   */
-  public static String getCpuName() {
-    try {
-      FileReader fr = new FileReader("/proc/cpuinfo");
-      BufferedReader br = new BufferedReader(fr);
-      String text = br.readLine();
-      String[] array = text.split(":\\s+", 2);
-      for (int i = 0; i < array.length; i++) {
-      }
-      return array[1];
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    return null;
-  }
 
     public static void showDialog(Activity activity, String title, String message) {
         new AlertDialog.Builder(activity).setTitle(title).setMessage(message)
                 .setPositiveButton("确定", null).show();
+    }
+    
+    /**
+     * get cpu name, according cpu type parse relevant so lib
+     * @return
+     *      ARM、ARMV7、X86、MIPS
+     */
+    public static String getCpuName() {
+      try {
+        FileReader fr = new FileReader("/proc/cpuinfo");
+        BufferedReader br = new BufferedReader(fr);
+        String text = br.readLine();
+        String[] array = text.split(":\\s+", 2);
+        for (int i = 0; i < array.length; i++) {
+        }
+        return array[1];
+      } catch (FileNotFoundException e) {
+        e.printStackTrace();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      return null;
     }
 }

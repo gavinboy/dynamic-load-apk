@@ -60,25 +60,15 @@ public class DLProxyImpl {
         PackageInfo packageInfo = mPluginPackage.packageInfo;
         if ((packageInfo.activities != null) && (packageInfo.activities.length > 0)) {
             if (mClass == null) {
-                mClass = packageInfo.activities[0].name;
+                mClass =mPluginPackage.getDefaultActivity(); //packageInfo.activities[0].name;
             }
-            for (ActivityInfo a : packageInfo.activities) {
-                if (a.name.equals(mClass)) {
-                    mActivityInfo = a;
-                }
+            mActivityInfo =mPluginPackage.getActivityInfoByName(mClass);
             }
-        }
     }
 
     private void handleActivityInfo() {
-        Log.d(TAG, "handleActivityInfo, theme=" + mActivityInfo.theme);
-        if (mActivityInfo.theme > 0) {
-            mActivity.setTheme(mActivityInfo.theme);
-        }
-        Theme superTheme = mActivity.getTheme();
-        mTheme = mResources.newTheme();
-        mTheme.setTo(superTheme);
-
+        Log.d(TAG, "handleActivityInfo, theme=" + mActivityInfo.getThemeResource());
+        mActivity.setTheme(mActivityInfo.getThemeResource());
         // TODO: handle mActivityInfo.launchMode here in the future.
     }
 
@@ -93,8 +83,8 @@ public class DLProxyImpl {
         mResources = mPluginPackage.resources;
 
         initializeActivityInfo();
-        handleActivityInfo();
         launchTargetActivity();
+        handleActivityInfo();
     }
 
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)

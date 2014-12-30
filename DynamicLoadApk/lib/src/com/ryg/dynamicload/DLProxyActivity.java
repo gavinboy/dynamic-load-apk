@@ -41,8 +41,9 @@ public class DLProxyActivity extends Activity implements DLProxy {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         impl.onCreate(getIntent());
+        super.onCreate(savedInstanceState);
+        
     }
 
     @Override
@@ -63,8 +64,30 @@ public class DLProxyActivity extends Activity implements DLProxy {
 
     @Override
     public Theme getTheme() {
-        return impl.getTheme() == null ? super.getTheme() : impl.getTheme();
+      if(mRemoteActivity!=null)
+      {
+        return mRemoteActivity.getTheme();
+      }else
+      {
+        return super.getTheme();
+      }
+        
     }
+    
+    @Override
+    public void setTheme(int resid) 
+    {
+      if(mRemoteActivity!=null)
+      {
+        mRemoteActivity.setTheme(resid);
+      }else
+      {
+        super.setTheme(resid);
+      }
+      
+    }
+    
+    
 
     @Override
     public ClassLoader getClassLoader() {
